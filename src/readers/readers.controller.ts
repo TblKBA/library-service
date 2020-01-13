@@ -48,9 +48,9 @@ export class ReadersController {
                 throw new BadRequestException('Query length must be >2 symbols. Special characters will be removed.');
             }
         }
-        else if (readTicket || id ) {
+     /*   else if (readTicket || id ) {
             const searchParams: SearchParams = {
-                readTicket: readTicket || null,
+                id: id || null,
             };
             return this.readersService.search(searchParams)
                 .pipe(
@@ -63,26 +63,28 @@ export class ReadersController {
                         return res;
                     }),
                 );
-        }
+        }*/
         return this.readersService.getAll();
     }
 
-    @Get(':readTicket')
-        getById(@Param('readTicket') readTicket: number): Observable<Readers> {
-            return this.readersService.getById(readTicket).pipe(
+    @Get(':id')
+        getById(@Param('id') id: number): Observable<Readers> {
+            return this.readersService.getById(id).pipe(
                 first(),
             );
     }
 
    @Post()
+   @ApiImplicitQuery({ name: 'FIO', required: false })
+   @ApiImplicitQuery({ name: 'Email', required: false })
     @UsePipes(CreateReadersPipe, CreateReadersDtoValidationPipe)
         create(@Body() options: CreateReadersDto): Observable<Readers> {
           return this.readersService.search(options)
                 .pipe(
                     map(res => {
-                        if (res && res.length !== 0) {
+                        /*if (res && res.length !== 0) {
                             throw new ConflictException('User with such readTicket already exists');
-                        }
+                        }*/
                         return res;
                     }),
                     flatMap(() => this.readersService.create(options)),
@@ -122,4 +124,6 @@ export class ReadersController {
                 }),
             );
     }
+
+
 }

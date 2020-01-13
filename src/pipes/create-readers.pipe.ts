@@ -11,7 +11,7 @@ export class CreateReadersPipe implements PipeTransform {
    */
   transform(opts: CreateReadersDto, metadata: ArgumentMetadata): CreateReadersDto {
     return Object.assign(opts, {
-      readTicket: opts.readTicket,
+      // id: opts.id,
     });
    /* return Object.assign(opts, {
       readTicket: toCanonical(opts.readTicket),

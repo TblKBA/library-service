@@ -20,7 +20,7 @@ import {CreateBooksPipe} from "../pipes/create-books.pipe";
 import {CreateBooksDtoValidationPipe} from "../pipes/create-books-dto-validation.pipe";
 import {CreateBooksDto} from "./dto/create-books.dto";
 import {UpdateBooksDto} from "./dto/update-books.dto";
-import {SearchParams, SearchParamsB} from "../exceptions/search.params";
+import {NotFoundFieldsException, SearchParams, SearchParamsWithError} from "../exceptions/search.params";
 import {LoggingInterceptor} from "../interceptors/logging.interceptor";
 
 @ApiUseTags('books')
@@ -51,22 +51,25 @@ export class BooksController {
                 throw new BadRequestException('Query length must be >2 symbols. Special characters will be removed.');
             }
         }
-        /*else if ( idBook || name || author || amount ) {
-            const searchParamsB: SearchParamsB = {
+        else if ( idBook || name || author || amount ) {
+            const searchParams: SearchParams = {
                 idBook: idBook || null,
+                name: name || null,
+                author: author || null,
+                amount: amount || null,
             };
-            returnthis.booksService.search(searchParamsB)
+            return this.booksService.search(searchParams)
                 .pipe(
                     first(),
                     map((res: Books[]) => {
-                        /!*if (res && res.length === 0) {
-                            const paramsWithError: SearchParamsWithError = { message: 'No giveout found for given data', data: searchParamsG };
+                        if (res && res.length === 0) {
+                            const paramsWithError: SearchParamsWithError = { message: 'No Books found for given data', data: searchParams };
                             throw new NotFoundFieldsException(paramsWithError);
-                        }*!/
+                        }
                         return res;
                     }),
                 );
-        }*/
+        }
         return this.booksService.getAll();
     }
 
@@ -83,9 +86,9 @@ export class BooksController {
         return this.booksService.search(options)
             .pipe(
                 map(res => {
-                    if (res && res.length !== 0) {
-                        throw new ConflictException('idBook already exists');
-                    }
+                   /* if (res && res.length !== 0) {
+                        throw new ConflictException('name/author/year already exists');
+                    }*/
                     return res;
                 }),
                 flatMap(() => this.booksService.create(options)),

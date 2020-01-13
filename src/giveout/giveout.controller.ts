@@ -51,9 +51,9 @@ export class GiveoutController {
                 throw new BadRequestException('Query length must be >2 symbols. Special characters will be removed.');
             }
         }
-        else if (readTicket || idGiveOut || dateReturn || idBook ) {
+        /*else if (readTicket || idGiveOut || dateReturn || idBook ) {
             const searchParamsG: SearchParamsG = {
-                idGiveOut: idGiveOut || null,
+                idBook: idBook || null,
             };
             return this.giveoutService.search(searchParamsG)
                 .pipe(
@@ -66,7 +66,7 @@ export class GiveoutController {
                         return res;
                     }),
                 );
-        }
+        }*/
         return this.giveoutService.getAll();
     }
 
@@ -83,9 +83,9 @@ export class GiveoutController {
         return this.giveoutService.search(options)
             .pipe(
                 map(res => {
-                    if (res && res.length !== 0) {
+                    /*if (res && res.length !== 0) {
                         throw new ConflictException('idGiveOut already exists');
-                    }
+                    }*/
                     return res;
                 }),
                 flatMap(() => this.giveoutService.create(options)),

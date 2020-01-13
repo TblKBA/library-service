@@ -3,19 +3,6 @@ import { ApiModelProperty } from '@nestjs/swagger';
 import {MAX_AUTHOR_LENGTH, MAX_NAME_LENGTH} from "../entity/books.entity";
 
 export class UpdateBooksDto{
-    @IsString()
-    @IsNotEmpty()
-    @MaxLength(10)
-    @ApiModelProperty({
-        description: 'IdBook ID book',
-        nullable: true,
-        pattern: 'Int',
-        example: '1111111111',
-        required: false,
-        type: 'string',
-    })
-    readonly idBook?: number;
-
     @IsNotEmpty()
     @IsString()
     @MaxLength(MAX_NAME_LENGTH)

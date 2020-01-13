@@ -6,6 +6,8 @@ import {catchError, first, map} from "rxjs/operators";
 import {Books} from "./entity/books.entity";
 import {CreateBooksDto} from "./dto/create-books.dto";
 import {UpdateBooksDto} from "./dto/update-books.dto";
+import {prepareSearchParams, removeEmptyFields} from "../utils/utils";
+import {SearchParams} from "../exceptions/search.params";
 
 @Injectable()
 export class BooksService {
@@ -56,8 +58,7 @@ export class BooksService {
     }
 
     search(params: CreateBooksDto): Observable<Books[]> {
-        /*const rawParams: Partial<SearchParamsG> = prepareSearchParams(removeEmptyFields(params));
-        return from(this.booksRepository.find(rawParams));*/
-        return from(this.booksRepository.find())
+        const rawParams: Partial<SearchParams> = prepareSearchParams(removeEmptyFields(params));
+        return from(this.booksRepository.find(rawParams));
     }
 }

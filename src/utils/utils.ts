@@ -35,3 +35,23 @@ export function prepareSearchParams(params: Partial<SearchParams>) {
 export function toCanonical(str: string): string {
   return str[0].toUpperCase() + str.substring(1).toLowerCase();
 }
+
+/*export function getPerson(personData,createNew = true) {
+  return new Promise((resolve, reject) => axios
+      .get(`${process.env.PEOPLE_API_URL}/person${generateParams(personData)}`)
+      .then(res => resolve(res.data[0].id))
+      .catch(err => {
+        if (err.response.status == 404){
+          if (createNew){
+            // resolve(createPerson(personData));
+          } else {
+            resolve(null);
+          }
+        } else {
+          console.log(err);
+          reject("Возникла ошибка при подключении к базе данных пользователей");
+        }
+      }));
+}
+
+module.exports = getPerson;*/

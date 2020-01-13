@@ -6,7 +6,7 @@ import {CreateGiveoutDto} from "../giveout/dto/create-giveout.dto";
 export class CreateGiveoutPipe implements PipeTransform {
     transform(opts: CreateGiveoutDto, metadata: ArgumentMetadata): CreateGiveoutDto {
         return Object.assign(opts, {
-            idGiveOut: opts.idGiveOut,
+            idBook: opts.idBook,
         });
     }
 }

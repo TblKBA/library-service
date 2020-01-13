@@ -6,19 +6,6 @@ export class CreateGiveoutDto {
     @IsNotEmpty()
     @MaxLength(10)
     @ApiModelProperty({
-        description: 'idGiveOut ID give of reader',
-        nullable: true,
-        pattern: 'Int',
-        example: '1111111111',
-        required: false,
-        type: 'string',
-    })
-    readonly idGiveOut?: number;
-
-    @IsString()
-    @IsNotEmpty()
-    @MaxLength(10)
-    @ApiModelProperty({
         description: 'IdBook ID book',
         nullable: true,
         pattern: 'Int',

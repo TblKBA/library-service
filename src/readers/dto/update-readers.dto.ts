@@ -2,7 +2,6 @@ import { IsOptional, MaxLength } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 
 export class UpdateReadersDto{
-
   @IsOptional()
   @MaxLength(10)
   @ApiModelProperty({

@@ -23,8 +23,8 @@ export class ReadersService {
          return from(this.readersRepository.save(options));
     }
 
-    getById(readTicket: number): Observable<Readers> {
-        return from(this.readersRepository.findOneOrFail(readTicket))
+    getById(id: number): Observable<Readers> {
+        return from(this.readersRepository.findOneOrFail(id))
             .pipe(
                 catchError(e => {
                     if (e.name === 'EntityNotFound') {
@@ -35,17 +35,17 @@ export class ReadersService {
             );
     }
 
-    deleteById(readTicket: number): Observable<DeleteResult> {
-        return from(this.readersRepository.delete(readTicket));
+    deleteById(id: number): Observable<DeleteResult> {
+        return from(this.readersRepository.delete(id));
     }
 
-    update(readTicket: number, options: UpdateReadersDto): Observable<UpdateResult> {
-        return from(this.readersRepository.update(readTicket, Object.assign(options)));
+    update(id: number, options: UpdateReadersDto): Observable<UpdateResult> {
+        return from(this.readersRepository.update(id, Object.assign(options)));
     }
 
     searchByAnyField(query: string): Observable<Readers[]> {
         return from(this.readersRepository.query(
-            `SELECT * FROM readers WHERE readTicket LIKE "%${query}%"`))
+            `SELECT * FROM readers WHERE id LIKE "%${query}%"`))
             .pipe(
                 first(),
                 map(res => {
@@ -59,6 +59,6 @@ export class ReadersService {
 
     search(params: CreateReadersDto): Observable<Readers[]> {
         const rawParams: Partial<SearchParams> = prepareSearchParams(removeEmptyFields(params));
-        return from(this.readersRepository.find(rawParams));
+        return from(this.readersRepository.find());
     }
 }

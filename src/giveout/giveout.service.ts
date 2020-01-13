@@ -59,7 +59,8 @@ export class GiveoutService {
     }
 
     search(params: CreateGiveoutDto): Observable<Giveout[]> {
-        const rawParams: Partial<SearchParams> = prepareSearchParams(removeEmptyFields(params));
-        return from(this.giveoutRepository.find(rawParams));
+        /*const rawParams: Partial<SearchParams> = prepareSearchParams(removeEmptyFields(params));
+        return from(this.giveoutRepository.find(rawParams));*/
+        return from(this.giveoutRepository.find());
     }
 }

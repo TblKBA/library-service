@@ -11,6 +11,6 @@ export let typeOrmOptions: TypeOrmModuleOptions = {
   username: 'std_265',
   password: '10731236',
   database: 'std_265',
-  entities: [Readers,Giveout,Books, Log],
+  entities: [Readers,Giveout,Books,Log],
   synchronize: true,
 };

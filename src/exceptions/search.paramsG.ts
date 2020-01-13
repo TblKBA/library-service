@@ -7,7 +7,7 @@ export class NotFoundFieldsException extends HttpException {
 }
 
 export interface SearchParamsG {
-  idGiveOut: number;
+  idBook: number;
 }
 
 export interface SearchParamsWithError {
