@@ -1,75 +1,292 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Сервис "Библиотека"
+## Получение списка читателей
+- Метод: GET
+- Путь: /readers
+- Тело запроса (JSON): пустое
+- URL параметры: 
+    - `query`* - поиск по любой части номера читательского билета или id человека
+    
+    ИЛИ**
+    - `readTicket` - поиск по номеру читательского билета
+    - `id` - поиск по id человека
+    
+\* `query` - приоритетный параметр, если он указан, то `readTicket`, `id` будут проигнорированы
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+\** - поиск по полям `readTicket`/`id` можно комбинировать; 
 
-## Description
+- Формат ответа: JSON массив с читателями ИЛИ [ошибка](#Ошибки)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Если не указан ни один URL параметр, то будут возвращены все читатели из базы данных.
 
-## Installation
+## Получение читателя по readTicket
+- Метод: GET
+- Путь: /readers/{readTicket}
+- Тело запроса (JSON): пустое
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект (читатель) ИЛИ [ошибка](#Ошибки)
 
-```bash
-$ npm install
+## Добавление читателя
+- Метод: POST
+- Путь: /readers
+- Тело запроса (JSON): 
+    - `email`* - эл. почта
+    - `FIO`* - Фамилия Имя Отчество
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект формата `CreateResult` ИЛИ [ошибка](#Ошибки)
+
+Модель ответа `CreateResult`:
+```js
+{
+    data: Readers, // сама модель объекта Readers
+    wasFound: boolean // если true - читатель существует и возвращён из БД; false - создан и сохранён в БД
+}
+```
+Пример: 
+```json
+{
+  "data": {
+    "FIO": "Osokin Mixail Alexevich",
+    "email": "osm@mail.com"
+  },
+  "wasFound": false
+}
 ```
 
-## Running the app
+\* - обязательные поля
 
-```bash
-# development
-$ npm run start
+## Редактирование читателя
+- Метод: PUT
+- Путь: /readers/{readTicket}
+- Тело запроса (JSON): 
+    - `id` - редактирование id человека
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект (читатель) ИЛИ [ошибка](#Ошибки)
 
-# watch mode
-$ npm run start:dev
+\* - обязательные поля
 
-# production mode
-$ npm run start:prod
+## Удаление читателя
+- Метод: DELETE
+- Путь: /readers/{readTicket}
+- Тело запроса (JSON): пустое
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект с полями:
+    - `affectedRows` - кол-во затронутых (удалённых) записей в базе данных
+    - `ok` - успешно ли удаление (*true* или *false*)
+   
+  ИЛИ [ошибка](#Ошибки)
+
+## Ошибки
+Представляют из себя объект с полями:
+- `statusCode` - HTTP код ошибки
+- `error` - соответствующий HTTP коду текст ошибки
+- `message` - текст ошибки, отправленный сервисом
+
+Например:
+```json
+{
+  "statusCode": 404,
+  "error": "Not Found",
+  "message": "Could not find any entity of type \"Readers\" readTicket: \"2222\""
+}
+```
+## Получение списка выдачи
+- Метод: GET
+- Путь: /giveout
+- Тело запроса (JSON): пустое
+- URL параметры: 
+    - `query`* - поиск по любой части даты выдачи,даты возврата,id книги и id выдачи.
+    
+    ИЛИ**
+    - `readTicket` - поиск по номеру читательского билета
+    - `dateReturn` - дата возврата книги
+    - `dateGiveOut` - дата выдачи книги
+    - `idBook` - id книги
+    - `idGiveOut` - id выдачи
+    
+\* `query` - приоритетный параметр, если он указан, то `readTicket`, `idGiveOut` будут проигнорированы
+
+\** - поиск по полям `readTicket`/`idGiveOut` можно комбинировать; 
+
+- Формат ответа: JSON массив с выдачами ИЛИ [ошибка](#Ошибки)
+
+Если не указан ни один URL параметр, то будут возвращены все выдачи из базы данных.
+
+## Получение выдачи по idGiveOut
+- Метод: GET
+- Путь: /giveout/{idGiveOut}
+- Тело запроса (JSON): пустое
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект (выдача) ИЛИ [ошибка](#Ошибки)
+
+## Добавление выдачи
+- Метод: POST
+- Путь: /giveout
+- Тело запроса (JSON): 
+    - `idBook`* - id книги
+    - `readTicket`* - id читательского билета
+    - `dateReturn`* - дата возврата книги
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект формата `CreateResult` ИЛИ [ошибка](#Ошибки)
+
+Модель ответа `CreateResult`:
+```js
+{
+    data: Giveout, // сама модель объекта Giveout
+    wasFound: boolean // если true - выдача существует и возвращёна из БД; false - создана и сохранёна в БД
+}
+```
+Пример: 
+```json
+{
+  "data": {
+    "idGiveOut": "2222",
+    "readTicket": "0072",
+    "dateGiveOut": "18022019",
+    "dateReturn": "25072019",
+    "idBook": "55"
+  },
+  "wasFound": false
+}
 ```
 
-## Test
+\* - обязательные поля
 
-```bash
-# unit tests
-$ npm run test
+## Редактирование выдачи
+- Метод: PUT
+- Путь: /giveout/{idGiveOut}
+- Тело запроса (JSON): 
+    - `idBook` - id книги
+    - `readTicket` - id читательского билета
+    - `dateReturn` - дата возврата книги
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект (выдача) ИЛИ [ошибка](#Ошибки)
 
-# e2e tests
-$ npm run test:e2e
+\* - обязательные поля
 
-# test coverage
-$ npm run test:cov
+## Удаление выдачи
+- Метод: DELETE
+- Путь: /giveout/{idGiveOut}
+- Тело запроса (JSON): пустое
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект с полями:
+    - `affectedRows` - кол-во затронутых (удалённых) записей в базе данных
+    - `ok` - успешно ли удаление (*true* или *false*)
+   
+  ИЛИ [ошибка](#Ошибки)
+
+## Ошибки
+Представляют из себя объект с полями:
+- `statusCode` - HTTP код ошибки
+- `error` - соответствующий HTTP коду текст ошибки
+- `message` - текст ошибки, отправленный сервисом
+
+Например:
+```json
+{
+  "statusCode": 404,
+  "error": "Not Found",
+  "message": "Could not find any entity of type \"Giveout\" idGiveOut: \"2222\""
+}
+```
+## Получение списка книг
+- Метод: GET
+- Путь: /books
+- Тело запроса (JSON): пустое
+- URL параметры: 
+    - `query`* - поиск по любой части автора,имени книги, id книги.
+    
+    ИЛИ**
+    - `idBook` - id книги
+    - `name` - название книги
+    - `author` - автор книги
+    - `year` - год издания книги
+    - `amount` - количество данных книг
+    
+\* `query` - приоритетный параметр, если он указан, то `idBook`, `name` будут проигнорированы
+
+\** - поиск по полям `idBook`/`name` можно комбинировать; 
+
+- Формат ответа: JSON массив с читателями ИЛИ [ошибка](#Ошибки)
+
+Если не указан ни один URL параметр, то будут возвращены все книги из базы данных.
+
+## Получение книги по idBook
+- Метод: GET
+- Путь: /books/{idBook}
+- Тело запроса (JSON): пустое
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект (книга) ИЛИ [ошибка](#Ошибки)
+
+## Добавление книги
+- Метод: POST
+- Путь: /books
+- Тело запроса (JSON): 
+    - `name`* - название книги
+    - `author`* - автор книги
+    - `year`* - год издания книги
+    - `amount`* - количество книг
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект формата `CreateResult` ИЛИ [ошибка](#Ошибки)
+
+Модель ответа `CreateResult`:
+```js
+{
+    data: Books, // сама модель объекта Books
+    wasFound: boolean // если true - книга существует и возвращёна из БД; false - создана и сохранёна в БД
+}
+```
+Пример: 
+```json
+{
+  "data": {
+    "idBook": "025",
+    "name": "Go to Mars",
+    "author": "Inkognito",
+    "year": "01022001",
+    "amount": "3"
+  },
+  "wasFound": false
+}
 ```
 
-## Support
+\* - обязательные поля
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Редактирование книги
+- Метод: PUT
+- Путь: /books/{idBook}
+- Тело запроса (JSON): 
+    - `name`* - название книги
+    - `author`* - автор книги
+    - `year`* - год издания книги
+    - `amount`* - количество книг
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект (книга) ИЛИ [ошибка](#Ошибки)
 
-## Stay in touch
+\* - обязательные поля
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Удаление книги
+- Метод: DELETE
+- Путь: /books/{idBook}
+- Тело запроса (JSON): пустое
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект с полями:
+    - `affectedRows` - кол-во затронутых (удалённых) записей в базе данных
+    - `ok` - успешно ли удаление (*true* или *false*)
+   
+  ИЛИ [ошибка](#Ошибки)
 
-## License
+## Ошибки
+Представляют из себя объект с полями:
+- `statusCode` - HTTP код ошибки
+- `error` - соответствующий HTTP коду текст ошибки
+- `message` - текст ошибки, отправленный сервисом
 
-  Nest is [MIT licensed](LICENSE).
+Например:
+```json
+{
+  "statusCode": 404,
+  "error": "Not Found",
+  "message": "Could not find any entity of type \"Books\" idBook: \"2222\""
+}
+```
+
