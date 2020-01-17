@@ -26,9 +26,6 @@ export class Log {
   reqHeaders: object;
 
   @Column({ type: 'json', nullable: true })
-  resHeaders: object;
-
-  @Column({ type: 'json', nullable: true })
   resBody: object;
 
   @Column({ type: 'varchar', nullable: false })
@@ -37,6 +34,4 @@ export class Log {
   @Column({ type: 'timestamp', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   readonly date: Date;
 
-  /*  @Column({ type: 'varchar', nullable: false })
-    source: string;*/
 }

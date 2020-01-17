@@ -8,7 +8,7 @@ import {
     Param,
     Delete,
     BadRequestException,
-    ConflictException, UsePipes, UseInterceptors
+    UsePipes, UseInterceptors
 } from '@nestjs/common';
 import {ApiImplicitQuery, ApiUseTags} from '@nestjs/swagger';
 
@@ -22,7 +22,13 @@ import { DatabaseException } from '../exceptions/database.exception';
 import {CreateReadersDto} from "./dto/create-readers.dto";
 import {CreateReadersPipe} from "../pipes/create-readers.pipe";
 import {CreateReadersDtoValidationPipe} from "../pipes/create-readers-dto-validation.pipe";
-import {NotFoundFieldsException, SearchParams, SearchParamsWithError} from "../exceptions/search.params";
+import {
+    NotFoundFieldsException,
+    NotFoundFieldsExceptionR,
+    SearchParams,
+    SearchParamsR,
+    SearchParamsWithError, SearchParamsWithErrorR
+} from "../exceptions/search.params";
 import {LoggingInterceptor} from "../interceptors/logging.interceptor";
 
 @ApiUseTags('readers')
@@ -48,46 +54,44 @@ export class ReadersController {
                 throw new BadRequestException('Query length must be >2 symbols. Special characters will be removed.');
             }
         }
-     /*   else if (readTicket || id ) {
-            const searchParams: SearchParams = {
+        else if (readTicket || id ) {
+            const searchParamsR: SearchParamsR = {
+                readTicket: readTicket || null,
                 id: id || null,
             };
-            return this.readersService.search(searchParams)
+            return this.readersService.search(searchParamsR)
                 .pipe(
                     first(),
                     map((res: Readers[]) => {
                         if (res && res.length === 0) {
-                            const paramsWithError: SearchParamsWithError = { message: 'No readers found for given data', data: searchParams };
-                            throw new NotFoundFieldsException(paramsWithError);
+                            const paramsWithError: SearchParamsWithErrorR = { message: 'No readers found for given data', data: searchParamsR };
+                            throw new NotFoundFieldsExceptionR(paramsWithError);
                         }
                         return res;
                     }),
                 );
-        }*/
+        }
         return this.readersService.getAll();
     }
 
-    @Get(':id')
-        getById(@Param('id') id: number): Observable<Readers> {
+    @Get(':readTicket')
+        getById(@Param('readTicket') id: number): Observable<Readers> {
             return this.readersService.getById(id).pipe(
                 first(),
             );
     }
 
-   @Post()
-   @ApiImplicitQuery({ name: 'FIO', required: false })
-   @ApiImplicitQuery({ name: 'Email', required: false })
+   @Post(':Email')
+   //@ApiImplicitQuery({ name: 'FIO', required: false })
+  // @ApiImplicitQuery({ name: 'Email', required: false })
     @UsePipes(CreateReadersPipe, CreateReadersDtoValidationPipe)
-        create(@Body() options: CreateReadersDto): Observable<Readers> {
+        create(@Param('Email') email: string, @Body() options: CreateReadersDto): Observable<Readers> {
           return this.readersService.search(options)
                 .pipe(
                     map(res => {
-                        /*if (res && res.length !== 0) {
-                            throw new ConflictException('User with such readTicket already exists');
-                        }*/
                         return res;
                     }),
-                    flatMap(() => this.readersService.create(options)),
+                    flatMap(() => this.readersService.create(email,options)),
                     catchError(err => {
                         throw new DatabaseException(err.message);
                     }),
@@ -124,6 +128,5 @@ export class ReadersController {
                 }),
             );
     }
-
 
 }

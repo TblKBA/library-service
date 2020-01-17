@@ -86,9 +86,6 @@ export class BooksController {
         return this.booksService.search(options)
             .pipe(
                 map(res => {
-                   /* if (res && res.length !== 0) {
-                        throw new ConflictException('name/author/year already exists');
-                    }*/
                     return res;
                 }),
                 flatMap(() => this.booksService.create(options)),

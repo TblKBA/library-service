@@ -3,12 +3,11 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {DeleteResult, Repository, UpdateResult} from "typeorm";
 import {from, Observable, of} from "rxjs";
 import {catchError, first, map} from "rxjs/operators";
-import {SearchParamsG} from "../exceptions/search.paramsG";
 import {prepareSearchParams, removeEmptyFields} from "../utils/utils";
 import {Giveout} from "./entity/giveout.entity";
 import {CreateGiveoutDto} from "./dto/create-giveout.dto";
 import {UpdateGiveoutDto} from "./dto/update-giveout.dto";
-import {SearchParams} from "../exceptions/search.params";
+import {SearchParamsG} from "../exceptions/search.params";
 
 @Injectable()
 export class GiveoutService {
@@ -59,8 +58,7 @@ export class GiveoutService {
     }
 
     search(params: CreateGiveoutDto): Observable<Giveout[]> {
-        /*const rawParams: Partial<SearchParams> = prepareSearchParams(removeEmptyFields(params));
-        return from(this.giveoutRepository.find(rawParams));*/
-        return from(this.giveoutRepository.find());
+        const rawParams: Partial<SearchParamsG> = prepareSearchParams(removeEmptyFields(params));
+        return from(this.giveoutRepository.find(rawParams));
     }
 }

@@ -32,26 +32,29 @@ export function prepareSearchParams(params: Partial<SearchParams>) {
  * Example: toCanonical('hELlO') => 'Hello'
  * @param str
  */
+
+interface ServerResponse {
+  data: ServerData
+}
+
+interface ServerData {
+  fio: string
+  email: string
+}
+
 export function toCanonical(str: string): string {
   return str[0].toUpperCase() + str.substring(1).toLowerCase();
 }
 
 /*export function getPerson(personData,createNew = true) {
-  return new Promise((resolve, reject) => axios
-      .get(`${process.env.PEOPLE_API_URL}/person${generateParams(personData)}`)
-      .then(res => resolve(res.data[0].id))
-      .catch(err => {
-        if (err.response.status == 404){
-          if (createNew){
-            // resolve(createPerson(personData));
-          } else {
-            resolve(null);
-          }
-        } else {
-          console.log(err);
-          reject("Возникла ошибка при подключении к базе данных пользователей");
-        }
-      }));
+  axios.request<ServerData>({
+    url: 'https://example.com/path/to/data',
+    transformResponse: (r: ServerResponse) => r.data
+  }).then((response) => {
+    // `response` is of type `AxiosResponse<ServerData>`
+    const { data } = response
+    // `data` is of type ServerData, correctly inferred
+  })
 }
 
 module.exports = getPerson;*/

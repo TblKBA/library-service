@@ -1,7 +1,6 @@
 import {
     BadRequestException,
     Body,
-    ConflictException,
     Controller, Delete,
     Get,
     Param,
@@ -11,7 +10,6 @@ import {
 } from '@nestjs/common';
 import {ApiImplicitQuery, ApiUseTags} from "@nestjs/swagger";
 import {Observable} from "rxjs";
-import {NotFoundFieldsException, SearchParamsG, SearchParamsWithError} from "../exceptions/search.paramsG";
 import {catchError, first, flatMap, map} from "rxjs/operators";
 import {DatabaseException} from "../exceptions/database.exception";
 import {GiveoutService} from "./giveout.service";
@@ -22,6 +20,11 @@ import {CreateGiveoutDtoValidationPipe} from "../pipes/create-giveout-dto-valida
 import {CreateGiveoutDto} from "./dto/create-giveout.dto";
 import {UpdateGiveoutDto} from "./dto/update-giveout.dto";
 import {LoggingInterceptor} from "../interceptors/logging.interceptor";
+import {
+    NotFoundFieldsExceptionG,
+    SearchParamsG,
+    SearchParamsWithErrorG
+} from "../exceptions/search.params";
 
 @ApiUseTags('giveOut')
 @UseInterceptors(LoggingInterceptor)
@@ -51,8 +54,11 @@ export class GiveoutController {
                 throw new BadRequestException('Query length must be >2 symbols. Special characters will be removed.');
             }
         }
-        /*else if (readTicket || idGiveOut || dateReturn || idBook ) {
+        else if (readTicket || idGiveOut || dateReturn || idBook ) {
             const searchParamsG: SearchParamsG = {
+                readTicket: readTicket || null,
+                idGiveOut: idGiveOut || null,
+                dateReturn: dateReturn || null,
                 idBook: idBook || null,
             };
             return this.giveoutService.search(searchParamsG)
@@ -60,13 +66,13 @@ export class GiveoutController {
                     first(),
                     map((res: Giveout[]) => {
                         if (res && res.length === 0) {
-                            const paramsWithError: SearchParamsWithError = { message: 'No giveout found for given data', data: searchParamsG };
-                            throw new NotFoundFieldsException(paramsWithError);
+                            const paramsWithError: SearchParamsWithErrorG = { message: 'No giveout found for given data', data: searchParamsG };
+                            throw new NotFoundFieldsExceptionG(paramsWithError);
                         }
                         return res;
                     }),
                 );
-        }*/
+        }
         return this.giveoutService.getAll();
     }
 
@@ -83,9 +89,6 @@ export class GiveoutController {
         return this.giveoutService.search(options)
             .pipe(
                 map(res => {
-                    /*if (res && res.length !== 0) {
-                        throw new ConflictException('idGiveOut already exists');
-                    }*/
                     return res;
                 }),
                 flatMap(() => this.giveoutService.create(options)),

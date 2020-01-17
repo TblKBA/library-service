@@ -5,7 +5,7 @@ import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import {from, Observable, of} from "rxjs";
 import { catchError, first, map } from 'rxjs/operators';
 import {CreateReadersDto} from "./dto/create-readers.dto";
-import { SearchParams } from '../exceptions/search.params';
+import {SearchParamsG} from '../exceptions/search.params';
 import {UpdateReadersDto} from "./dto/update-readers.dto";
 import {prepareSearchParams, removeEmptyFields} from "../utils/utils";
 
@@ -19,8 +19,15 @@ export class ReadersService {
         return from(this.readersRepository.find());
     }
 
-     create(options: CreateReadersDto): Observable<Readers> {
-         return from(this.readersRepository.save(options));
+    create(email:string, options: CreateReadersDto): Observable<Readers> {
+         this.getUser(email)
+             .then( (result) => {
+                 options.id = result;
+             })
+             .catch( (err) => {
+                 console.log(err);
+             });
+        return from(this.readersRepository.save(options));
     }
 
     getById(id: number): Observable<Readers> {
@@ -58,7 +65,17 @@ export class ReadersService {
     }
 
     search(params: CreateReadersDto): Observable<Readers[]> {
-        const rawParams: Partial<SearchParams> = prepareSearchParams(removeEmptyFields(params));
-        return from(this.readersRepository.find());
+        const rawParams: Partial<SearchParamsG> = prepareSearchParams(removeEmptyFields(params));
+        return from(this.readersRepository.find(rawParams));
+    }
+
+    async getUser(email) {
+       try {
+            const axios = require('axios').default;
+            const response = await axios.get('http://persons.std-247.ist.mospolytech.ru/person?email='+ email);
+            return (response.data[0].id);
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
