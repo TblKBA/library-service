@@ -45,16 +45,3 @@ interface ServerData {
 export function toCanonical(str: string): string {
   return str[0].toUpperCase() + str.substring(1).toLowerCase();
 }
-
-/*export function getPerson(personData,createNew = true) {
-  axios.request<ServerData>({
-    url: 'https://example.com/path/to/data',
-    transformResponse: (r: ServerResponse) => r.data
-  }).then((response) => {
-    // `response` is of type `AxiosResponse<ServerData>`
-    const { data } = response
-    // `data` is of type ServerData, correctly inferred
-  })
-}
-
-module.exports = getPerson;*/
